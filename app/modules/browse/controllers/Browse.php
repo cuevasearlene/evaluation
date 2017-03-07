@@ -24,22 +24,15 @@ class Browse extends MX_Controller
 		$all_get = $this->general->all_get();
 		$offset = ($offset != NULL) ? $offset : $all_get->per_page;
 
-		if($all_get->status){
-			if($all_get->status == 'active'){
-				$this->db->having('questions >=', 5);
-				$this->db->where('e.expired_at >=', date('Y-m-d'));
+		
+		
+		$this->db->having('questions >=', 5);
+		$this->db->where('e.expired_at >=', date('Y-m-d'));
 
-			}
+		
 
-			if($all_get->status == 'inactive'){
 
-				$this->db->having('questions <', 5);
-				$this->db->or_having('questions is null');
-				// $this->db->or_where('e.expired_at >=', date('Y-m-d'));
-
-			}
-
-		}
+		
 
 		$optional = $all_get->topics ? $this->db->where('e.category', $all_get->topics) : null;
 		$optional = $all_get->q ? $this->db->like('e.title', $all_get->q, 'both') : NULL;
