@@ -1276,9 +1276,11 @@ function read_more(){
 // ADDING READMORE ON TEXT WRAP
 
 $(document).on('click', '.scan_qr_code', function(){
-
-  $('#qr_code_container').append();
+  $('#id_qr_code').attr('src', $(this).data('src'));
   loop();
+});
+$(document).on('click', '.login_qr_code', function(){
+
 });
 function loop() {
   $('#move-red').animate({'top': '130'}, {

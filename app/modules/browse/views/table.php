@@ -86,7 +86,7 @@
             <span class="badge add-padding-x badge-success pull-right view_comment" style="font-size:11px;cursor:pointer;margin-right:5px"  data-toggle="modal" data-target="#comments" data-tt="tooltip"  data-placement="bottom" title="View comments"  data-id="<?php echo $val->id; ?>">
             <i class="ion-chatbox-working"></i>&nbspcomments
             </span>
-            <span class="badge add-padding-x badge-primary pull-right scan_qr_code" style="font-size:11px;cursor:pointer;margin-right:5px"  data-toggle="modal" data-target="#qrcode" data-tt="tooltip"  data-placement="bottom" title="Scan qr code" data-id="<?php echo $val->id; ?>">
+            <span class="badge add-padding-x badge-primary pull-right scan_qr_code" style="font-size:11px;cursor:pointer;margin-right:5px"  data-toggle="modal" data-target="#qrcode" data-tt="tooltip" data-src="<?php $this->general->generate_qr($val->id, $val->id); echo MEDIA.'qr_generated/'.$val->id.'.png';?>" data-placement="bottom" title="Scan qr code" data-id="<?php echo $val->id; ?>">
                 <i class="ion-qr-scanner"></i>&nbspcode
             </span>
         </div>
@@ -122,7 +122,7 @@
         <div class="row">
             <div class="col-lg-2"></div>
             <div class="col-lg-8">
-                <img src="<?php $this->general->generate_qr($val->id, $val->id); echo MEDIA.'qr_generated/'.$val->id.'.png';?>" class="resposive qr-medium">
+                <img id="id_qr_code" src="" class="resposive qr-medium">
             </div>
             <div class="col-lg-2"></div>         
         </div>
@@ -141,6 +141,25 @@
 </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
 
+<div id="qrcode_login" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content modal-qr-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel">Scan to login</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <img src="<?php $this->general->generate_qr("login", "cuevas.badillo.evalapp"); echo MEDIA.'qr_generated/'.$val->id.'.png';?>" class="resposive qr-medium">
+            </div>
+            <div class="col-lg-2"></div>         
+        </div>     
+    </div>
+</div>
+</div><!-- /.modal-content -->
+</div>
 <!-- LIST EVALUATED modal content -->
 
 
