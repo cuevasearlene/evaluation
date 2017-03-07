@@ -56,7 +56,7 @@ class Questions extends MX_Controller
 
        $this->general->table = 'question as q';
        $this->db->where('q.id not in (SELECT question_id from question_evaluation where evaluation_id = "'.$all_post->id.'")', NULL, FALSE);
-       $this->db->select('question, category');
+       $this->db->select('question, category, id');
         $list = $this->general->get_datatables();
 
         foreach ($list as $val) {

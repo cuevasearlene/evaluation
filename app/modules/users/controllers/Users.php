@@ -156,7 +156,8 @@ class Users extends MX_Controller
 		$url = site_url('users/edit/'.$id);
 		// THIS IS server side validation
 		$fv = $this->form_validation;
-		$fv->set_rules('name', 'name', 'required');
+		$fv->set_rules('firstName', 'firstName', 'required');
+		$fv->set_rules('password', 'password', 'required');
 		$fv->set_rules('email', 'email', 'required');
 		$fv->set_rules('username', 'username', 'required');
 		$fv->set_rules('number', 'number', 'required');

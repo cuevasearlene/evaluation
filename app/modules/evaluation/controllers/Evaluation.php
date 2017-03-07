@@ -182,6 +182,7 @@ class Evaluation extends MX_Controller
 				,'page_size' => $all_post->page
 				,'expired_at' => $all_post->expired_at
 				,'created_at' => $this->general->datetime
+				,'uid' => $this->session->session_uid
 				);
 			$this->general->insert_table('evaluation', $insert_data);
 

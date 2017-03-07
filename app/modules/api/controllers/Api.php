@@ -209,5 +209,282 @@ class Api extends MX_Controller
 		$r = $this->general->get_table('evaluation as e', array('e.id' => $all_post->id), 'e.created_at, e.expired_at, (SELECT COUNT(1) FROM evaluation_authorize where evaluation_id = e.id group by evaluation_id) as "authorize", (SELECT COUNT(1) FROM evaluation_authorize where evaluation_id = e.id and evaluated = 1 group by evaluation_id) as "evaluated"');
 		echo json_encode($r->row());
 	}
+
+	// ANDROID APIS
+	// ANDROID APIS
+
+	function w(){
+		echo $_POST['a'];
+	}
+
+	function retrieve_account(){
+		$all_post = $this->general->all_post();
+
+		$res = $this->general->get_table('users', array('id' => $all_post->id, 'token' => $all_post->token), 'id');
+
+		if($res->num_rows() > 0){
+			exit(json_encode(array('status' => 'success', 'message' => 'user has found')));
+		}
+		exit(json_encode(array('status' => 'error', 'message' => 'user not found')));
+	}
+
+	function login_qr(){
+		$all_post = $this->general->all_post();
+
+		$res = $this->general->get_table('users', array('token' => $all_post->token), 'id');
+
+		if($res->num_rows() > 0){
+			exit(json_encode(array('status' => 'success', 'message' => 'user has found')));
+		}
+		exit(json_encode(array('status' => 'error', 'message' => 'user not found')));
+	}
+	function login_manual(){
+		$all_post = $this->general->all_post();
+
+		$this->db->where('username', $all_post->id);
+		$this->db->or_where('phone', $all_post->id);
+		$this->db->where('password', base64_encode(base64_encode($all_post->password)));
+		$res = $this->general->get_table('users', '', 'id');
+
+		if($res->num_rows() > 0){
+			exit(json_encode(array('status' => 'success', 'message' => 'user has found')));
+		}
+		exit(json_encode(array('status' => 'error', 'message' => 'user not found')));
+	}
+
+	function register(){
+		$all_post = $this->general->all_post();
+	
+	
+		$fv = $this->form_validation;
+
+		$fv->set_rules('username', 'username', 'required');
+		$fv->set_rules('password', 'password', 'required');
+		$fv->set_rules('name', 'name', 'required');
+		$fv->set_rules('email', 'email', 'required');
+		$fv->set_rules('phone', 'phone', 'required');
+
+		
+		if($fv->run() == TRUE){
+
+			// IF EMAIL IS NOT VALID
+			if (filter_var($all_post->email, FILTER_VALIDATE_EMAIL) === false) {
+				exit(json_encode(array('status' => 'error', 'message' => 'Invalid Email')));
+			}
+
+			// IF EMAIL IS TAKEN
+			$res = $this->general->get_table('users', array('email' => $all_post->email), 'id');
+			if ($res->num_rows() > 0) {
+				exit(json_encode(array('status' => 'error', 'message' => 'Email Already Taken')));
+			}
+
+			// IF USERNAME IS TAKEN
+			$res = $this->general->get_table('users', array('username' => $all_post->username), 'id');
+			if ($res->num_rows() > 0) {
+				exit(json_encode(array('status' => 'error', 'message' => 'Username Already Taken')));
+			}
+
+			// VALIDATE IF NUMBER IS TRUE
+			if(strlen($all_post->number) != 13){
+				exit(json_encode(array('status' => 'error', 'message' => 'Invalid Phone Number')));
+			}
+
+			// IF NUMBER IS TAKEN
+			$res = $this->general->get_table('users', array('phone' => $all_post->phone), 'id');
+			if ($res->num_rows() > 0) {
+				exit(json_encode(array('status' => 'error', 'message' => 'Phone Already Taken')));
+			}
+
+			// MIN OF 8 CHARACTER FOR PASSWORD
+			if(strlen($all_post->password) < 8){
+				exit(json_encode(array('status' => 'error', 'message' => 'Weak password')));
+			}
+
+
+			$code = substr (uniqid(), 5, 5);
+			$insert_data = array(
+								'category' => 'uncategorized',
+								'username' => $all_post->username,
+								'password' => base64_encode(base64_encode($all_post->password)),
+								'name' => $all_post->name,
+								'guid' =>  2,
+								'email' => $all_post->email,
+								'phone' => $all_post->phone,
+								'created_at' => $this->general->datetime,
+								'verification_code' => $code
+								);
+			$this->general->insert_table('users', $insert_data);
+
+			$var = $this->general->send_sms($all_post->number, $code);
+
+			exit(json_encode(array('status' => 'success', 'message' => 'Successfully Registered')));
+
+		}
+		else{
+			exit(json_encode(array('status' => 'error', 'message' => 'please input blank fields')));
+		}
+	}
+	function edit_profile(){
+		$all_post = $this->general->all_post();
+		
+
+		$update = array();
+		// IF EMAIL IS NOT VALID
+		if(isset($all_post->email) && $all_post->email != ''){
+			if (filter_var($all_post->email, FILTER_VALIDATE_EMAIL) === false) {
+				exit(json_encode(array('status' => 'error', 'message' => 'Invalid Email')));
+			}
+
+			// IF EMAIL IS TAKEN
+			$this->db->where('token !=', $all_post->token);
+			$res = $this->general->get_table('users', array('email' => $all_post->email), 'id');
+			if ($res->num_rows() > 0) {
+				exit(json_encode(array('status' => 'error', 'message' => 'Email Already Taken')));
+			}
+
+			$update = $update + array('email' => $all_post->email);
+		}
+		
+
+		if(isset($all_post->username) && $all_post->username != ''){
+	    	// IF USERNAME IS TAKEN
+	    	$this->db->where('token !=', $all_post->token);
+			$res = $this->general->get_table('users', array('username' => $all_post->username), 'id');
+				if ($res->num_rows() > 0) {
+				exit(json_encode(array('status' => 'error', 'message' => 'Username Already Taken')));
+			}
+			$update = $update + array('username' => $all_post->username);
+		}
+
+
+		if(isset($all_post->phone) & $all_post->phone != ''){
+			// VALIDATE IF NUMBER IS TRUE
+			if(strlen($all_post->phone) != 13){
+				exit(json_encode(array('status' => 'error', 'message' => 'Invalid Phone Number')));
+			}
+
+		// IF NUMBER IS TAKEN
+			$this->db->where('token !=', $all_post->token);
+			$res = $this->general->get_table('users', array('phone' => $all_post->phone), 'id');
+			if ($res->num_rows() > 0) {
+				exit(json_encode(array('status' => 'error', 'message' => 'Phone Already Taken')));
+			}
+			$update = $update + array('phone' => $all_post->phone);
+
+		}
+
+		if(isset($all_post->name) & $all_post->name != ''){
+
+			$update = $update + array('name'=> $all_post->name);
+		}
+
+		if(isset($all_post->password) && $all_post->password != ''){
+			// MIN OF 8 CHARACTER FOR PASSWORD
+			if(strlen($all_post->password) < 8){
+				exit(json_encode(array('status' => 'error', 'message' => 'Weak password')));
+			}
+			$update = $update + array('password' => base64_encode(base64_encode($all_post->password)));
+		}
+
+
+		$this->general->update_table('users', array('token' => $all_post->token) , $update);
+
+		exit(json_encode(array('status' => 'success', 'message' => 'Successfully Updated')));
+		
+	}
+
+	function evaluation_authorize(){
+
+		$all_post = $this->general->all_post();
+
+		$this->db->where('u.token', $all_post->id);
+		$this->db->where('ea.evaluation_id', $all_post->evaluationID);
+		$this->db->join('users as u', 'u.id = ea.evaluator_id');
+		$res = $this->general->get_table('evaluation_authorize as ea', '', 'id');
+
+		if($res->num_rows() > 0){
+			exit(json_encode(array('status' => 'success', 'message' => 'user is authorize')));
+		}
+		exit(json_encode(array('status' => 'error', 'message' => 'is not authorize')));
+	}
+
+	function evaluation_info(){
+
+		$all_post = $this->general->all_post();
+
+		$this->db->where('e.id', $all_post->evaluationID);
+		$this->db->join('users as u', 'u.id = e.uid', 'inner');
+		$res = $this->general->get_table('evaluation as e', '', 'e.title, e.description, e.category, u.name, (SELECT SUM(rate) / COUNT(1) from evaluation_ratings where evaluation_ratings.evaluation_id = e.id) as ratings');
+
+		if($res->num_rows() > 0){
+			exit(json_encode(array('status' => 'success', 'message' => 'user is authorize', 'data' => $res->result())));
+		}
+		exit(json_encode(array('status' => 'error', 'message' => 'is not authorize')));
+	}
+
+	function evaluation_download(){
+
+		$all_post = $this->general->all_post();
+		$this->db->where('e.id', $all_post->evaluationID);
+		$res = $this->general->get_table('evaluation_attachment','','name');
+
+		if($res->num_rows() < 0){
+			exit(json_encode(array('status' => 'error', 'message' => 'invalid evaluation id')));
+		}
+
+		$files = array();
+		foreach ($res->result() as $vals) {
+			array_push($files, site_url().'/assets/attachments/'.$all_post->evaluationID.'/'.$vals->name);
+		}
+
+		exit(json_encode(array('status' => 'success', 'message' => 'Successfully Retrieve file', 'data' => $files)));
+
+	}
+
+	function evaluation_question(){
+
+
+		$all_post = $this->general->all_post();
+		$this->db->where('u.token', $all_post->token);
+		$this->db->where('ea.evaluation_id', $all_post->evaluationID);
+		$this->db->join('users as u', 'u.id = ea.evaluator_id', 'inner');
+		$res = $this->general->get_table('evaluation_authorize as ea','','ea.evaluated');
+
+		if($res->num_rows() < 0){
+			exit(json_encode(array('status' => 'error', 'message' => 'invalid token')));
+		}
+
+		if($res->row()->evaluated == 1){
+			exit(json_encode(array('status' => 'error', 'message' => 'you already evaluated')));
+		}
+
+		$this->db->join('question as q', 'q.id = qe.question_id');
+		$res = $this->general->get_table('question_evaluation as qe', array('qe.evaluation_id', $all_post->evaluationID), 'q.question, q.type, qe.id');
+		$i = 0;
+		foreach ($res->result() as $vals) {
+			$data[]['question_id'] = $vals->id;
+			$data[]['question'] = $vals->question;
+			$data[]['type'] = $vals->type;
+
+			$answers = $this->general->get_table('question_choices', array('question_eval_id' => $vals->id), 'text');
+			$question = array();
+			foreach ($answers->result() as $val) {
+				array_push($question, array('text' => $val->text, 'id' => $val->id));
+			}
+			$data[]["answers"] = $question;
+			$i++;
+		}
+
+		exit(json_encode(array('status' => 'success', 'message' => 'Successfully Retireve', 'data' => $data)));
+
+
+	}
+
+
+
+
+
+	// ANDROID APIS
+	// ANDROID APIS
 	
 }
