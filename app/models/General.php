@@ -275,12 +275,12 @@ class General extends CI_Model
 		{
 			$template .= '<ul>';
 
-			if(!$controller)
+			if($controller == 'home')
 			{
 				$active = 'class="active"';
 			}
 
-			$template .= '<li class="'.$active.'">'.anchor('', '<i class="md md-home"></i><span>Dashboard</span></a>').'</li>';
+			$template .= '<li><a href="'.site_url('home').'" class="'.($controller == 'home' ? 'active' : '').'"><i class="md md-home"></i><span>Dashboard</span></a></li>';
 		}
 		else
 		{

@@ -245,7 +245,66 @@ class Users extends MX_Controller
 
 		exit(json_encode(array('status' => 'success', 'message' => 'Successfully Deleted')));
 
+	}
 
+	function profile($username = ""){
+
+		$this->general->blocked_page('users', 'alter');
+
+		$cat = $this->general->get_table('user_group', '', 'guid, gname')->result();
+		$array = array();
+		foreach($cat as $row ){
+			$array[$row->guid] = $row->gname;
+		}
+
+		$data = $this->general->get_table('users', array('username' => $username), '*');
+
+		$this->viewdata['data'] = $data->row();
+		$this->viewdata['category'] = $array;
+		$this->viewdata['user_category'] = $this->general->get_category('user', false);
+		$this->viewdata['title'] = 'Profile';
+		$this->viewdata['content'] = 'users/profile';
+		$this->load->view($this->template, $this->viewdata);
+
+	}
+	function retrieve_my_evaluation(){
+
+		$data = array();
+
+        $no = $_POST['start'];
+
+        $this->general->table = 'evaluation as e';
+        $this->db->where('e.uid', $this->session->session_uid);
+        $this->db->select('e.title', 'e.created_at');
+           
+        $this->general->column_search = array('e.title', 'e.created_at');
+        $this->general->column_order = array('e.title', 'e.created_at');
+
+        $list = $this->general->get_datatables();
+
+        foreach ($list as $val) {
+        
+            $row = array();
+            $row['title'] = $val->title;
+            $row['created_at'] = date('F d, Y', strtotime($val->created_at));
+        
+            $data[] = $row;
+        }
+
+        $this->db->where('e.uid', $this->session->session_uid);
+      	$x = $this->db->get('evaluation as e')->num_rows();
+      	$total = $x;
+
+  	    $this->db->where('e.uid', $this->session->session_uid);
+      	$filtered = $this->general->count_filtered();
+
+        $output = array(
+                        "draw" => $_POST['draw'],
+                        "recordsTotal" => $total,
+                        "recordsFiltered" => $filtered,
+                        "data" => $data,
+                );
+        echo json_encode($output);
 	}
 
 

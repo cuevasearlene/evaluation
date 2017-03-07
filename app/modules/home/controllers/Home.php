@@ -11,7 +11,7 @@ class Home extends MX_Controller
 		$this->template_login = $this->general->template_login;
 		$this->viewdata = $this->general->viewdata();
 		
-		
+		$this->viewdata['controller'] = 'home';
 	}
 
 	function index()
