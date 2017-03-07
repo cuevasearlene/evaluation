@@ -1032,6 +1032,8 @@ $(document).on('click', '.btn_ratings', function(){
 });
 
 
+
+
 $(document).on('click', '.btn_comment', function(){
  var id = $(this).data('id');
 
@@ -1045,6 +1047,32 @@ $(document).on('click', '.btn_comment', function(){
         // Load data for the table's content from an Ajax source
         "ajax": {
           "url": base_url+'evaluation/retrieve_comments',
+          "type": "POST",
+          "data" : {id: $(this).data('id')}
+        },
+        "columns": [
+        { data: 'username', name: 'username' },
+        { data: 'comment', name:'comment'},
+        { data: 'created_at', name:'created_at'}
+        ],
+      });
+
+
+});
+
+$(document).on('click', '.view_comment', function(){
+ var id = $(this).data('id');
+
+ var html = ' <table class="table table-bordered table-striped comment_table" cellspacing="0" width="100%" id=""> <thead> <tr> <th>Username</th> <th>Comment</th> <th>Date Comment</th> </tr></thead> <tbody> </tbody> </table>';
+ $('#comment_container').html(html);
+ table = $('.comment_table').DataTable({ 
+        "processing": true, //Feature control the processing indicator.
+        "serverSide": true, //Feature control DataTables' server-side processing mode.
+        "order": [], //Initial no order.
+
+        // Load data for the table's content from an Ajax source
+        "ajax": {
+          "url": base_url+'browse/retrieve_comments',
           "type": "POST",
           "data" : {id: $(this).data('id')}
         },

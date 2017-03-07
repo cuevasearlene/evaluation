@@ -130,8 +130,9 @@
         <div class="clearfix"></div>
         <div class="row">
 
-          <div class="col-lg-3">
-           <img src="<?php $this->general->generate_qr($val->id, $val->id); echo MEDIA.'qr_generated/'.$val->id.'.png';?>" class="qr-small pull-left">  
+          <div class="col-lg-3 show-print-icon">
+          <div class="hover-print" id="print_qr_code"><i class="fa fa-print" aria-hidden="true"></i></div>
+           <img src="<?php $this->general->generate_qr($val->id, $val->id); echo MEDIA.'qr_generated/'.$val->id.'.png';?>" class="qr-small pull-left add-box-shadow">  
          </div>
          <div class="col-lg-8">
           <div class="comment-rating-container">

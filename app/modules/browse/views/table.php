@@ -47,15 +47,15 @@
        </div>
        <?php foreach($get_table->result() as $key => $val):++$key; ?>
         <div class="col-sm-6 col-lg-4">
-            <div class="panel">
-                <div class="panel-heading bg-blue">
-                    <h4 class="panel-title text-white"><?php echo $val->title; ?></h4>
+            <div class="panel add-border-top">
+                <div class="panel-heading bg-blue view-panel-header">
+                    <h4 class="panel-title text-white"><?php echo $val->category; ?></h4>
                 </div>
                 <div class="panel-body panel-less-padding">
                     <div class="media-main remove-padding-top">
 
                      <div class="info">
-                        
+                        <h5 class="text-blue"><?php echo $val->title; ?></h5>
                         <p class="text-muted text-grey" style="word-break:break-all"><?php echo substr( $val->description, 0, 150); ?>
                         </p>
                     </div>
@@ -77,14 +77,14 @@
          <div class="clearfix"></div> 
 
     </div> <!-- panel-body -->
-    <div class="panel-footer bg-grey-light">
+    <div class="panel-footer footer-border bg-white">
         <div class="row">
             <div class="col-sm-5">
              <label class="small tiny"><i class="fa fa-clock-o"></i> Until: <?php echo date('M d, Y', strtotime($val->expired_at )); ?></label>
          </div>
          <div class="col-sm-7">
-            <span class="badge add-padding-x badge-success pull-right done_evaluation_members" style="font-size:11px;cursor:pointer;margin-right:5px"  data-toggle="modal" data-target="#comments" data-tt="tooltip"  data-placement="bottom" title="View comments"  data-id="<?php echo $val->id; ?>">
-            <i class="ion-chatbox-working""></i>&nbspcomments
+            <span class="badge add-padding-x badge-success pull-right view_comment" style="font-size:11px;cursor:pointer;margin-right:5px"  data-toggle="modal" data-target="#comments" data-tt="tooltip"  data-placement="bottom" title="View comments"  data-id="<?php echo $val->id; ?>">
+            <i class="ion-chatbox-working"></i>&nbspcomments
             </span>
             <span class="badge add-padding-x badge-primary pull-right scan_qr_code" style="font-size:11px;cursor:pointer;margin-right:5px"  data-toggle="modal" data-target="#qrcode" data-tt="tooltip"  data-placement="bottom" title="Scan qr code" data-id="<?php echo $val->id; ?>">
                 <i class="ion-qr-scanner"></i>&nbspcode
@@ -145,18 +145,18 @@
 
 
 <!-- LIST EVALUATED modal content -->
-<div id="members" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="comments" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h4 class="modal-title" id="myModalLabel">Comments</h4>
-    </div>
-    <div class="modal-body" id="qr_code_container">
+      </div>
+      <div class="modal-body" id="comment_container">
 
+      </div>
     </div>
-</div>
-</div><!-- /.modal-content -->
+  </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
 
 
